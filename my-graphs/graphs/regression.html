@@ -10,13 +10,22 @@
             margin-top: 40px;
             text-align: center;
         }
+        /* Make sure the canvas takes full width and adjusts its height based on container size */
+        #chartContainer {
+            width: 100%;
+            max-width: 800px; /* Set a max-width for the container */
+            margin: 0 auto;
+        }
         canvas {
-            border: 1px solid #ccc;
+            width: 100% !important; /* Make canvas width responsive */
+            height: 400px; /* Default height, will adjust dynamically */
         }
     </style>
 </head>
 <body>
-    <canvas id="myChart" width="600" height="400"></canvas>
+    <div id="chartContainer">
+        <canvas id="myChart"></canvas>
+    </div>
 
     <script>
         // Define less and more scattered data points
@@ -109,7 +118,21 @@
 
         // Render chart
         const ctx = document.getElementById('myChart').getContext('2d');
-        new Chart(ctx, config);
+        const myChart = new Chart(ctx, config);
+
+        // Dynamically adjust canvas height based on container width
+        window.addEventListener('resize', function() {
+            const containerWidth = document.getElementById('chartContainer').offsetWidth;
+            const newHeight = containerWidth * 0.6; // Adjust the ratio to control height
+            myChart.canvas.height = newHeight;
+            myChart.update();
+        });
+
+        // Initial height adjustment
+        const initialWidth = document.getElementById('chartContainer').offsetWidth;
+        const initialHeight = initialWidth * 0.6; // Adjust the ratio to control height
+        myChart.canvas.height = initialHeight;
+        myChart.update();
     </script>
 </body>
 </html>
