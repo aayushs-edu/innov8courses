@@ -6,6 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
+            background: #131313;
             font-family: Arial, sans-serif;
             margin-top: 40px;
             text-align: center;
@@ -103,10 +104,12 @@
                         display: false // Hides the legend
                     },
                     title: {
+                        color: 'white', // Set title text color to white
                         display: true, // Show the chart title
                         text: 'Time Studied vs Test Scores', // Title of the chart
                         font: {
-                            size: 18
+                            size: 18,
+                            color: 'white' // Set title text color to white
                         }
                     }
                 },
@@ -115,20 +118,38 @@
                         type: 'linear',
                         position: 'bottom',
                         title: {
+                            color: 'white', // Set x-axis title text color to white
                             display: true, // Show x-axis title
                             text: 'Time Studied (Hours)', // Label for x-axis
                             font: {
-                                size: 14
+                                size: 14,
+                                color: 'white' // Set x-axis title text color to white
                             }
+                        },
+                        ticks: {
+                            color: 'white' // Set x-axis tick labels to white
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Set grid line color for y-axis
+                            display: true // Ensure grid lines are displayed
                         }
                     },
                     y: {
                         title: {
+                            color: 'white', // Set y-axis title text color to white
                             display: true, // Show y-axis title
                             text: 'Test Scores', // Label for y-axis
                             font: {
-                                size: 14
+                                size: 14,
+                                color: 'white' // Set y-axis title text color to white
                             }
+                        },
+                        ticks: {
+                            color: 'white' // Set y-axis tick labels to white
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Set grid line color for y-axis
+                            display: true // Ensure grid lines are displayed
                         }
                     }
                 }
