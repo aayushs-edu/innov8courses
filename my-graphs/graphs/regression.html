@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Linear Regression Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-regression"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.css">
+</head>
+<body>
+    <h2>Linear Regression Graph</h2>
+    <canvas id="myChart" width="600" height="400"></canvas>
+    <script>
+        const dataPoints = [
+            { x: 1, y: 3 },
+            { x: 2, y: 5 },
+            { x: 3, y: 7 },
+            { x: 4, y: 9 },
+            { x: 5, y: 11 }
+        ];
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Data Points',
+                    data: dataPoints,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                plugins: {
+                    regression: {
+                        type: 'linear',
+                        line: {
+                            color: 'red',
+                            width: 2
+                        },
+                        equation: true,
+                        roundDigits: 2
+                    }
+                },
+                scales: {
+                    x: { type: 'linear', position: 'bottom' },
+                    y: { title: { display: true, text: 'Y Axis' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
