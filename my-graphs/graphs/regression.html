@@ -2,52 +2,114 @@
 <html>
 <head>
     <title>Linear Regression Graph</title>
+    <!-- Load Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-regression"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-top: 40px;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
-    <h2>Linear Regression Graph</h2>
     <canvas id="myChart" width="600" height="400"></canvas>
+
     <script>
+        // Define less and more scattered data points
         const dataPoints = [
-            { x: 1, y: 3 },
-            { x: 2, y: 5 },
-            { x: 3, y: 7 },
-            { x: 4, y: 9 },
-            { x: 5, y: 11 }
+            { x: 1, y: 2.5 },
+            { x: 3, y: 6.1 },
+            { x: 4, y: 7.8 },
+            { x: 5, y: 11.3 },
+            { x: 6, y: 13.9 },
+            { x: 7, y: 15.4 },
+            { x: 9, y: 17.9 },
+            { x: 10, y: 21.4 },
+            { x: 12, y: 24.7 },
+            { x: 14, y: 28.1 }
         ];
 
-        const ctx = document.getElementById('myChart').getContext('2d');
-        const myChart = new Chart(ctx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'Data Points',
+        // Manually calculate linear regression using least squares method
+        function calculateRegression(data) {
+            let n = data.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+
+            data.forEach(point => {
+                sumX += point.x;
+                sumY += point.y;
+                sumXY += point.x * point.y;
+                sumX2 += point.x * point.x;
+            });
+
+            // Calculate slope (m) and y-intercept (b)
+            let m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            let b = (sumY - m * sumX) / n;
+
+            return { slope: m, intercept: b };
+        }
+
+        // Get regression line data
+        const regression = calculateRegression(dataPoints);
+        const regressionLine = dataPoints.map(point => {
+            return { x: point.x, y: regression.slope * point.x + regression.intercept };
+        });
+
+        // Prepare data for scatter plot
+        const scatterData = {
+            datasets: [
+                {
                     data: dataPoints,
                     backgroundColor: 'rgba(54, 162, 235, 0.6)',
                     borderColor: 'rgba(54, 162, 235, 1)',
-                    pointRadius: 5
-                }]
-            },
+                    pointRadius: 5,
+                    type: 'scatter'
+                },
+                {
+                    data: regressionLine,
+                    type: 'line',
+                    borderColor: 'red',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false
+                }
+            ]
+        };
+
+        // Chart configuration
+        const config = {
+            type: 'scatter',
+            data: scatterData,
             options: {
+                responsive: true,
                 plugins: {
-                    regression: {
-                        type: 'linear',
-                        line: {
-                            color: 'red',
-                            width: 2
-                        },
-                        equation: true,
-                        roundDigits: 2
+                    legend: {
+                        display: false // Hides the legend
                     }
                 },
                 scales: {
-                    x: { type: 'linear', position: 'bottom' },
-                    y: { title: { display: true, text: 'Y Axis' } }
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: false // Hides the x-axis title
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: false // Hides the y-axis title
+                        }
+                    }
                 }
             }
-        });
+        };
+
+        // Render chart
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, config);
     </script>
 </body>
 </html>
