@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Linear Regression Graph</title>
+    <!-- Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: #131313; /* Match the background color from regression.html */
+            font-family: Arial, sans-serif;
+            margin-top: 40px;
+            text-align: center;
+            color: white; /* Set default text color to white */
+        }
+        #chartContainer {
+            width: 100%;
+            max-width: 1000px; /* Increase the max width for a larger graph */
+            margin: 0 auto;
+        }
+        canvas {
+            width: 100% !important;
+            height: 500px; /* Increase the height for a larger graph */
+        }
+        #controls {
+            margin-top: 20px;
+        }
+        .slider-container {
+            margin: 10px 0;
+        }
+        label {
+            font-weight: bold;
+            color: white; /* Set label text color to white */
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 60%; /* Adjust slider width */
+            height: 8px; /* Slider height */
+            background: #7AE443; /* Slider track color */
+            border-radius: 5px; /* Rounded edges for the track */
+            outline: none;
+            opacity: 0.9; /* Slight transparency */
+            transition: opacity 0.2s;
+        }
+        input[type="range"]:hover {
+            opacity: 1; /* Full opacity on hover */
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px; /* Thumb width */
+            height: 20px; /* Thumb height */
+            background: #ffffff; /* Thumb color */
+            border-radius: 50%; /* Rounded thumb */
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="chartContainer">
+        <canvas id="interactiveChart"></canvas>
+    </div>
+
+    <!-- Controls for adjusting slope and y-intercept -->
+    <div id="controls">
+        <div class="slider-container">
+            <label for="slopeSlider">Slope (m): <span id="slopeValue">1</span></label>
+            <input type="range" id="slopeSlider" min="-5" max="10" step="0.3" value="1">
+        </div>
+        <div class="slider-container">
+            <label for="interceptSlider">Y-Intercept (b): <span id="interceptValue">0</span></label>
+            <input type="range" id="interceptSlider" min="-50" max="50" step="1" value="0">
+        </div>
+    </div>
+
+    <script>
+        // Define default slope and intercept
+        let slope = 1;
+        let intercept = 0;
+
+        // Function to generate regression line data based on user input
+        function generateLineData(m, b) {
+            const lineData = [];
+            for (let x = 0; x <= 10; x += 0.1) { // Generate points for the line
+                lineData.push({ x: x, y: m * x + b });
+            }
+            return lineData;
+        }
+
+        // Create initial line data
+        let regressionLine = generateLineData(slope, intercept);
+
+        // Chart configuration
+        const scatterData = {
+            datasets: [
+                {
+                    data: regressionLine,
+                    type: 'line',
+                    borderColor: '#7AE443', /* Match the regression line color from regression.html */
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false
+                }
+            ]
+        };
+
+        // Chart options
+        const config = {
+            type: 'scatter',
+            data: scatterData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Modify the Slope and Y-Intercept to Change the Line',
+                        font: {
+                            size: 18
+                        },
+                        color: 'white' // Set title text color to white
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'X-Axis',
+                            font: {
+                                size: 14
+                            },
+                            color: 'white' // Set x-axis title text color to white
+                        },
+                        ticks: {
+                            color: 'white' // Set x-axis tick labels to white
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Set grid line color for x-axis
+                            display: true
+                        },
+                        min: 0, // Set the minimum value for the x-axis
+                        max: 10 // Set the maximum value for the x-axis
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Y-Axis',
+                            font: {
+                                size: 14
+                            },
+                            color: 'white' // Set y-axis title text color to white
+                        },
+                        ticks: {
+                            color: 'white' // Set y-axis tick labels to white
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Set grid line color for y-axis
+                            display: true
+                        },
+                        min: -50, // Set the minimum value for the y-axis
+                        max: 50 // Set the maximum value for the y-axis
+                    }
+                }
+            }
+        };
+
+        // Render initial chart
+        const ctx = document.getElementById('interactiveChart').getContext('2d');
+        let myChart = new Chart(ctx, config);
+
+        // Function to update chart with new slope and intercept values
+        function updateChart() {
+            regressionLine = generateLineData(slope, intercept);
+            myChart.data.datasets[0].data = regressionLine;
+            myChart.update();
+        }
+
+        // Slope slider event listener
+        document.getElementById('slopeSlider').addEventListener('input', (e) => {
+            slope = parseFloat(e.target.value);
+            document.getElementById('slopeValue').innerText = slope;
+            updateChart();
+        });
+
+        // Y-Intercept slider event listener
+        document.getElementById('interceptSlider').addEventListener('input', (e) => {
+            intercept = parseFloat(e.target.value);
+            document.getElementById('interceptValue').innerText = intercept;
+            updateChart();
+        });
+
+    </script>
+</body>
+</html>
