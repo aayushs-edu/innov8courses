@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Regression Examples</title>
+    <!-- Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: #131313; /* Match the background color from regression.html */
+            font-family: Arial, sans-serif;
+            margin-top: 40px;
+            text-align: center;
+            color: white; /* Set default text color to white */
+        }
+        #chartsWrapper {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            justify-content: center; /* Center the graphs */
+            gap: 20px; /* Add spacing between graphs */
+        }
+        .chartContainer {
+            width: 45%; /* Set each graph to take 45% of the width */
+            max-width: 500px; /* Limit the maximum width */
+            margin: 10px auto;
+        }
+        canvas {
+            width: 100% !important;
+            height: 250px; /* Reduced height for smaller graphs */
+        }
+        h2 {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .equation {
+            color: #7AE443; /* Green color for equations */
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Regression Examples</h1>
+
+    <div id="chartsWrapper">
+        <!-- Linear Regression -->
+        <div class="chartContainer">
+            <h2>Linear Regression</h2>
+            <div class="equation">Equation: y = 2x + 5</div>
+            <canvas id="linearChart"></canvas>
+        </div>
+
+        <!-- Polynomial Regression -->
+        <div class="chartContainer">
+            <h2>Polynomial Regression</h2>
+            <div class="equation">Equation: y = x² - 2x + 3</div>
+            <canvas id="polynomialChart"></canvas>
+        </div>
+
+        <!-- Exponential Regression -->
+        <div class="chartContainer">
+            <h2>Exponential Regression</h2>
+            <div class="equation">Equation: y = 2e^(0.5x)</div>
+            <canvas id="exponentialChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Function to add random noise to data points
+        function addNoise(value, noiseLevel) {
+            return value + (Math.random() * 2 - 1) * noiseLevel;
+        }
+
+        // Function to generate linear regression data with noise
+        function generateLinearData(slope, intercept, noiseLevel) {
+            const data = [];
+            for (let x = 0; x <= 10; x += 0.75) { // Increased step size to reduce data points
+                const y = slope * x + intercept;
+                data.push({ x: x, y: addNoise(y, noiseLevel) });
+            }
+            return data;
+        }
+
+        // Function to generate polynomial regression data with noise
+        function generatePolynomialData(a, b, c, noiseLevel) {
+            const data = [];
+            for (let x = -5; x <= 5; x += 0.75) { // Increased step size to reduce data points
+                const y = a * x * x + b * x + c;
+                data.push({ x: x, y: addNoise(y, noiseLevel) });
+            }
+            return data;
+        }
+
+        // Function to generate exponential regression data with noise
+        function generateExponentialData(a, b, noiseLevel) {
+            const data = [];
+            for (let x = 0; x <= 20; x += 0.75) { // Increased step size to reduce data points
+                const y = a * Math.exp(b * x);
+                data.push({ x: x, y: addNoise(y, noiseLevel) });
+            }
+            return data;
+        }
+
+        // Chart configuration function
+        function createChart(ctx, data, regressionLine, title, xMin, xMax, yMin, yMax) {
+            const scatterData = {
+                datasets: [
+                    {
+                        data: data,
+                        type: 'scatter',
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)', /* Blue data points */
+                        pointRadius: 5
+                    },
+                    {
+                        data: regressionLine,
+                        type: 'line',
+                        borderColor: '#7AE443', /* Green regression line */
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false
+                    }
+                ]
+            };
+
+            const config = {
+                type: 'scatter',
+                data: scatterData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: false // Disable the graph title
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'X-Axis',
+                                font: {
+                                    size: 14
+                                },
+                                color: 'white'
+                            },
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.2)',
+                                display: true
+                            },
+                            min: xMin,
+                            max: xMax
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Y-Axis',
+                                font: {
+                                    size: 14
+                                },
+                                color: 'white'
+                            },
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.2)',
+                                display: true
+                            },
+                            min: yMin,
+                            max: yMax
+                        }
+                    }
+                }
+            };
+
+            return new Chart(ctx, config);
+        }
+
+        // Data for Linear Regression
+        const linearData = generateLinearData(2, 5, 3);
+        const linearRegressionLine = generateLinearData(2, 5, 0); // No noise for regression line
+
+        // Data for Polynomial Regression
+        const polynomialData = generatePolynomialData(1, -2, 3, 5);
+        const polynomialRegressionLine = generatePolynomialData(1, -2, 3, 0); // No noise for regression line
+
+        // Data for Exponential Regression
+        const exponentialData = generateExponentialData(2, 0.5, 50);
+        const exponentialRegressionLine = generateExponentialData(2, 0.5, 0); // No noise for regression line
+
+        // Render charts with individual scales
+        createChart(
+            document.getElementById('linearChart').getContext('2d'),
+            linearData,
+            linearRegressionLine,
+            'Linear Regression',
+            0, 10, 0, 30 // Scale for Linear Regression
+        );
+        createChart(
+            document.getElementById('polynomialChart').getContext('2d'),
+            polynomialData,
+            polynomialRegressionLine,
+            'Polynomial Regression',
+            -5, 5, -10, 50 // Scale for Polynomial Regression
+        );
+        createChart(
+            document.getElementById('exponentialChart').getContext('2d'),
+            exponentialData,
+            exponentialRegressionLine,
+            'Exponential Regression',
+            0, 20, 0, 3000 // Increased xMax to 20 for Exponential Regression
+        );
+    </script>
+</body>
+</html>
